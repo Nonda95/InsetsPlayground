@@ -85,5 +85,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { view, insets ->
+            ViewCompat.onApplyWindowInsets(view, insets)
+            insets
+        }
     }
 }
