@@ -5,10 +5,9 @@ import android.view.View.*
 import android.view.WindowInsets
 import android.view.WindowInsetsController.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
+import dev.chrisbanes.insetter.applyInsetter
 import pl.osmalek.bartek.insets.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -18,45 +17,29 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         with(binding) {
-            ViewCompat.setOnApplyWindowInsetsListener(stablePadding) { view, insets ->
-                val stableInsets = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars())
-                view.updatePadding(
-                    top = stableInsets.top,
-                    left = stableInsets.left,
-                    right = stableInsets.right,
-                    bottom = stableInsets.bottom
-                )
-                insets
+            stablePadding.applyInsetter {
+                // no ignore visibility available
+                type(navigationBars = true) {
+                    padding()
+                }
+                type(statusBars = true) {
+                    margin()
+                }
             }
-            ViewCompat.setOnApplyWindowInsetsListener(gesturePadding) { view, insets ->
-                val gesturesInsets = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
-                view.updatePadding(
-                    top = gesturesInsets.top,
-                    left = gesturesInsets.left,
-                    right = gesturesInsets.right,
-                    bottom = gesturesInsets.bottom
-                )
-                insets
+            gesturePadding.applyInsetter {
+                type(WindowInsetsCompat.Type.systemGestures()) {
+                    padding()
+                }
             }
-            ViewCompat.setOnApplyWindowInsetsListener(tappablePadding) { view, insets ->
-                val tappableInsets = insets.getInsets(WindowInsetsCompat.Type.tappableElement())
-                view.updatePadding(
-                    top = tappableInsets.top,
-                    left = tappableInsets.left,
-                    right = tappableInsets.right,
-                    bottom = tappableInsets.bottom
-                )
-                insets
+            tappablePadding.applyInsetter {
+                type(tappableElement = true) {
+                    padding()
+                }
             }
-            ViewCompat.setOnApplyWindowInsetsListener(systemPadding) { view, insets ->
-                val imeInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars() + WindowInsetsCompat.Type.ime())
-                view.updatePadding(
-                    top = imeInsets.top,
-                    left = imeInsets.left,
-                    right = imeInsets.right,
-                    bottom = imeInsets.bottom
-                )
-                insets
+            systemPadding.applyInsetter {
+                type(navigationBars = true, statusBars = true, ime = true) {
+                    padding()
+                }
             }
             toggleSystemUi.setOnClickListener {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
