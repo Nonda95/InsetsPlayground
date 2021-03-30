@@ -6,55 +6,55 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import pl.osmalek.bartek.insets.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            window.setDecorFitsSystemWindows(false)
-        } else {
-            window.decorView.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                    SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                    SYSTEM_UI_FLAG_LAYOUT_STABLE
-        }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         with(binding) {
             ViewCompat.setOnApplyWindowInsetsListener(stablePadding) { view, insets ->
+                val stableInsets = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars())
                 view.updatePadding(
-                    top = insets.stableInsetTop,
-                    left = insets.stableInsetLeft,
-                    right = insets.stableInsetRight,
-                    bottom = insets.stableInsetBottom
+                    top = stableInsets.top,
+                    left = stableInsets.left,
+                    right = stableInsets.right,
+                    bottom = stableInsets.bottom
                 )
                 insets
             }
             ViewCompat.setOnApplyWindowInsetsListener(gesturePadding) { view, insets ->
+                val gesturesInsets = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
                 view.updatePadding(
-                    top = insets.systemGestureInsets.top,
-                    left = insets.systemGestureInsets.left,
-                    right = insets.systemGestureInsets.right,
-                    bottom = insets.systemGestureInsets.bottom
+                    top = gesturesInsets.top,
+                    left = gesturesInsets.left,
+                    right = gesturesInsets.right,
+                    bottom = gesturesInsets.bottom
                 )
                 insets
             }
             ViewCompat.setOnApplyWindowInsetsListener(tappablePadding) { view, insets ->
+                val tappableInsets = insets.getInsets(WindowInsetsCompat.Type.tappableElement())
                 view.updatePadding(
-                    top = insets.tappableElementInsets.top,
-                    left = insets.tappableElementInsets.left,
-                    right = insets.tappableElementInsets.right,
-                    bottom = insets.tappableElementInsets.bottom
+                    top = tappableInsets.top,
+                    left = tappableInsets.left,
+                    right = tappableInsets.right,
+                    bottom = tappableInsets.bottom
                 )
                 insets
             }
             ViewCompat.setOnApplyWindowInsetsListener(systemPadding) { view, insets ->
+                val imeInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars() + WindowInsetsCompat.Type.ime())
                 view.updatePadding(
-                    top = insets.systemWindowInsetTop,
-                    left = insets.systemWindowInsetLeft,
-                    right = insets.systemWindowInsetRight,
-                    bottom = insets.systemWindowInsetBottom
+                    top = imeInsets.top,
+                    left = imeInsets.left,
+                    right = imeInsets.right,
+                    bottom = imeInsets.bottom
                 )
                 insets
             }
@@ -84,11 +84,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { view, insets ->
-            ViewCompat.onApplyWindowInsets(view, insets)
-            insets
         }
     }
 }
